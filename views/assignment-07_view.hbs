@@ -1,0 +1,696 @@
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CRUD User Interface for NodeJS, ExpressJS and MongoDB REST API</title>
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/assets/css/all.css" rel="stylesheet" type="text/css"/>  
+</head>
+<body>
+  <div class="container"> <!-- class="table-responsive text-nowrap (play with Bootstrap attributes for look you want) -->
+    <h2><a class="breadcrumb-item text-dark" href="/">Phone Store Database</a> <span class="badge badge-secondary" id="databaseFilterNotice"></span></h2>
+
+    <!-- Search the Results (Quotations) Table  -->
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelect01"><i class="fa fa-search"></i></label>
+            <select class="custom-select" id="fieldSearchSelect">
+                <option value="1" selected>Customer First Name</option>
+                <option value="2">Customer Last Name</option>
+            </select>
+        </div>
+        <input class="form-control py-2 border-left-0 border" type="search" placeholder="Filter Customer List ..." id="tableFilter"> 
+    </div>
+
+    <!-- Customer Table -->
+    <table class="table table-hover table-striped" id="customerList">
+      <thead>
+        <tr>  <!-- <tr class="d-flex"> -->
+          <th>Title</th>
+          <th >FirstName</th>
+          <th >Surname</th>
+          <th >Mobile</th>
+          <th >EmailAddress</th>
+          <th >HomeAddress</th>
+          <th >ShippingAddress</th>
+          <th class="text-center">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each results1}}
+        <tr >
+          <td>"{{Title}}"</td>
+          <td >{{FirstName}}</td>
+          <td >{{Surname}}</td>
+          <td >{{Mobile}}</td>
+          <td >{{EmailAddress}}</td>
+          <td >{{HomeAddressLine1}}<br>{{HomeAddressLine2}}<br>{{HomeTown}} {{HomeCounty_City}}<br>{{HomeEircode}}</td>
+          <td >{{ShippingAddressLine1}}<br>{{ShippingAddressLine2}}<br>{{ShippingTown}} {{ShippingCounty_City}}<br>{{ShippingEircode}}</td>
+          <td class="text-right">
+            <a href="javascript:void(0);" class="btn btn-sm btn-info update" data-id="{{ id }}" data-quote="{{ quotation }}" data-author="{{ author }}">Update</a>
+            <a href="javascript:void(0);" class="btn btn-sm btn-danger delete" data-id="{{ id }}" data-quote="{{ quotation }}"  data-author="{{ author }}">Delete</a>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <!-- Phone Table -->
+    <table class="table table-hover table-striped" id="phoneList">
+      <thead>
+        <tr>  <!-- <tr class="d-flex"> -->
+          <th>Manufacturer</th>
+          <th >Model</th>
+          <th >Price</th>
+          <th class="text-center">Options</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each results2}}
+        <tr >
+          <td>"{{Manufacturer}}"</td>
+          <td >{{Model}}</td>
+          <td >{{Price}}</td>
+          <td class="text-right">
+            <a href="javascript:void(0);" class="btn btn-sm btn-info update" data-id="{{ id }}">Update</a>
+            <a href="javascript:void(0);" class="btn btn-sm btn-danger delete" data-id="{{ id }}">Delete</a>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <!-- Database Search -->
+    <div class="input-group mb-3">
+        <!-- Add Customer Button  -->
+        <button class="btn btn-primary mr-5" data-toggle="modal" data-target="#addModalCust">Add Customer</button>
+        <button class="btn btn-primary mr-5" data-toggle="modal" data-target="#addModalPhone">Add Phone</button>
+        <!-- Search the Database (Customer) -->
+        <div class="input-group-prepend">
+             <select class="custom-select" id="databaseSearchSelect">
+                <option value="customers" selected>customers</option>
+                <option value="phones">phones</option>
+            </select>
+        </div>
+        <input class="form-control py-2 border-left-0 border" type="search" placeholder="Find in Database ..." id="databaseSearchFilter"> 
+        <div class="input-group-append">
+            <button class="btn btn-success" type="button" id="databaseSearch">Find</button>
+        </div>
+    </div>
+
+    <!-- Modal Add Customer-->
+    <form id="addForm" action="/customers" method="POST">
+        <div class="modal fade" id="addModalCust" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">Add New Customer</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+               <div class="form-group">
+                   <input type="text" name="Title" class="form-control" placeholder="Title" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="FirstName" class="form-control" placeholder="FirstName" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="Surname" class="form-control" placeholder="Surname" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="Mobile" class="form-control" placeholder="Mobile" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="EmailAddress" class="form-control" placeholder="EmailAddress" required>
+               </div>
+               <div>Home Address</div>
+               <div class="form-group">
+                   <input type="text" name="HomeAddressLine1" class="form-control" placeholder="AddressLine1" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="HomeAddressLine2" class="form-control" placeholder="AddressLine2">
+               </div>
+               <div class="form-group">
+                   <input type="text" name="HomeTown" class="form-control" placeholder="Town" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="HomeCounty_City" class="form-control" placeholder="County/City" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="HomeEircode" class="form-control" placeholder="Eircode">
+               </div>
+               <div>Shipping Address</div>
+               <div class="form-group">
+                   <input type="text" name="ShippingAddressLine1" class="form-control" placeholder="AddressLine1" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="ShippingAddressLine2" class="form-control" placeholder="AddressLine2">
+               </div>
+               <div class="form-group">
+                   <input type="text" name="ShippingTown" class="form-control" placeholder="Town" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="ShippingCounty_City" class="form-control" placeholder="County/City" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="ShippingEircode" class="form-control" placeholder="Eircode">
+               </div>
+             </div>
+             <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="submit" class="btn btn-primary">Save</button>
+             </div>
+           </div>
+         </div>
+        </div>
+    </form>
+    <!-- Modal Add Phone -->
+    <form id="addFormPhone" action="/phones" method="POST">
+        <div class="modal fade" id="addModalPhone" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">Add New Phone</h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <div class="modal-body">
+              <div class="form-group">
+                   <input type="text" name="Manufacturer" class="form-control" placeholder="Manufacturer">
+               </div>
+               <div class="form-group">
+                   <input type="text" name="Model" class="form-control" placeholder="Model">
+               </div>
+               <div class="form-group">
+                   <input type="text" name="Price" class="form-control" placeholder="Price">
+               </div>
+             </div>
+             <div class="modal-footer">
+               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+               <button type="submit" class="btn btn-primary">Save</button>
+             </div>
+           </div>
+         </div>
+        </div>
+    </form>
+
+    <!-- Modal Update Customer -->
+    <form id="updateForm" action="/customers" method="PUT"> <!-- we can't PUT with HTML form - this is just an attribute  picked up by AjAX -->
+       <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Update Cutomer</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                   <input type="text" name="Title" class="form-control Title" placeholder="Title" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="FirstName" class="form-control FirstName" placeholder="FirstName" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="Surname" class="form-control Surname" placeholder="Surname" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="Mobile" class="form-control Mobile" placeholder="Mobile" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="EmailAddress" class="form-control EmailAddress" placeholder="EmailAddress" required>
+               </div>
+               <div>Home Address</div>
+               <div class="form-group">
+                   <input type="text" name="HomeAddressLine1" class="form-control" placeholder="AddressLine1" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="HomeAddressLine2" class="form-control" placeholder="AddressLine2">
+               </div>
+               <div class="form-group">
+                   <input type="text" name="HomeTown" class="form-control" placeholder="Town" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="HomeCounty_City" class="form-control" placeholder="County/City" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="HomeEircode" class="form-control" placeholder="Eircode">
+               </div>
+               <div>Shipping Address</div>
+               <div class="form-group">
+                   <input type="text" name="ShippingAddressLine1" class="form-control" placeholder="AddressLine1" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="ShippingAddressLine2" class="form-control" placeholder="AddressLine2">
+               </div>
+               <div class="form-group">
+                   <input type="text" name="ShippingTown" class="form-control" placeholder="Town" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="ShippingCounty_City" class="form-control" placeholder="County/City" required>
+               </div>
+               <div class="form-group">
+                   <input type="text" name="ShippingEircode" class="form-control" placeholder="Eircode">
+               </div>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" name="customerId" class="id">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+          </div>
+        </div>
+       </div>
+    </form>
+
+    <!-- Modal Update Phones -->
+    <form id="updateFormPhone" action="/phones" method="PUT"> <!-- we can't PUT with HTML form - this is just an attribute  picked up by AjAX -->
+       <div class="modal fade" id="updateModalPhone" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Update Phone</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="form-group">
+                   <input type="text" name="Manufacturer" class="form-control" placeholder="Manufacturer">
+               </div>
+               <div class="form-group">
+                   <input type="text" name="Model" class="form-control" placeholder="Model">
+               </div>
+               <div class="form-group">
+                   <input type="text" name="Price" class="form-control" placeholder="Price">
+               </div>
+            </div>
+            <div class="modal-footer">
+              <input type="hidden" name="phoneId" class="id">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+          </div>
+        </div>
+       </div>
+    </form>
+
+    <!-- Modal Delete Customer-->
+    <form id="deleteForm" action="/customers" method="DELETE"> <!-- we can't DELETE with HTML form - this is just an attribute  picked up by AjAX -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                   <div class="modal-header">
+                        <h5 class="modal-title" id="myModalLabel">Delete Customer</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                   </div>
+                   <div class="modal-body">
+                        <strong>Are you sure you want to delete this Customer?</strong>
+                   </div>
+                   <div class="modal-footer">
+                        <input type="hidden" name="customerId" class="form-control id" required>
+                        <button type="submit" class="btn btn-success">Delete</button>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Modal Delete Phone-->
+    <form id="deleteFormPhone" action="/phones" method="DELETE"> <!-- we can't DELETE with HTML form - this is just an attribute  picked up by AjAX -->
+        <div class="modal fade" id="deleteModalPhone" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                   <div class="modal-header">
+                        <h5 class="modal-title" id="myModalLabel">Delete Customer</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                   </div>
+                   <div class="modal-body">
+                        <strong>Are you sure you want to delete this Phone?</strong>
+                   </div>
+                   <div class="modal-footer">
+                        <input type="hidden" name="phoneId" class="form-control id" required>
+                        <button type="submit" class="btn btn-success">Delete</button>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Operation Successful Alert Modal -->
+    <div class="modal fade" id="successAlert" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-success" role="alert">
+                <strong>Oh Great!</strong> RESTful Operation was Successful!
+            </div>
+        </div>
+    </div>
+
+    <!-- Operation Unsuccessful Alert Modal -->
+    <div class="modal fade" id="errorAlert" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="alert alert-danger" role="alert">
+                <strong>Oh No!</strong> RESTful Operation was Unsuccessful!
+            </div>
+        </div>
+    </div>
+ </div>
+ 
+<script src="/assets/js/jquery-3.5.1.min.js"></script>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        //
+        // Handle Add Modal form submit using AJAX PUT
+        //For Customers
+        var addForm = $("#addForm");
+        addForm.submit(function(e){
+
+            e.preventDefault(); // prevent handling the normal form submit click!
+            $.ajax({
+                type: addForm.attr('method'),
+                url:  addForm.attr('action'),
+                data: addForm.serialize(), // get data from form!
+                success: function (data) {
+                    console.log('Update successful!');
+                    // make a timed Bootstrap Alert on Success
+                    // then re-direct to "/"
+                    $('#successAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+                error: function (data) {
+                    console.log('An error occurred.');
+                    // make a timed Bootstrap Alert on Error
+                    // then re-direct to "/"
+                    $('#errorAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+            });
+            $('#addModalCust').modal('hide');
+        });
+        
+        //Add functionality for Phones
+        var addFormPhone = $("#addFormPhone");
+        addFormPhone.submit(function(e){
+
+            e.preventDefault(); // prevent handling the normal form submit click!
+            $.ajax({
+                type: addFormPhone.attr('method'),
+                url:  addFormPhone.attr('action'),
+                data: addFormPhone.serialize(), // get data from form!
+                success: function (data) {
+                    console.log('Update successful!');
+                    // make a timed Bootstrap Alert on Success
+                    // then re-direct to "/"
+                    $('#successAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+                error: function (data) {
+                    console.log('An error occurred.');
+                    // make a timed Bootstrap Alert on Error
+                    // then re-direct to "/"
+                    $('#errorAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+            });
+            $('#addModalPhone').modal('hide');
+        });
+
+
+
+        //
+        // Set up the Update Modal - It is shown, and data passed, via button click
+        //
+        $('#customerList').on('click','.update',function(){
+            var customer_id = $(this).data('id');
+            var customer_Title = $(this).data('Title');
+            var customer_FirstName = $(this).data('FirstName');
+            var customer_Surname = $(this).data('Surname');
+            var customer_Mobile = $(this).data('Mobile');
+            var customer_EmailAddress = $(this).data('EmailAddress');
+            var customer_HomeAddressLine1 = $(this).data('HomeAddressLine1');
+            var customer_HomeAddressLine2 = $(this).data('HomeAddressLine2');
+            var customer_HomeTown = $(this).data('HomeTown');
+            var customer_HomeCounty_City = $(this).data('HomeCounty_City');
+            var customer_HomeEircode = $(this).data('HomeEircode');
+            var customer_ShippingAddressLine1 = $(this).data('ShippingAddressLine1');
+            var customer_ShippingAddressLine2 = $(this).data('ShippingAddressLine2');
+            var customer_ShippingTown = $(this).data('ShippingTown');
+            var customer_ShippingCounty_City = $(this).data('ShippingCounty_City');
+            var customer_ShippingEircode = $(this).data('ShippingEircode');
+            // alert (quotation_id+": "+ quotation_quote+" "+quotation_author);
+            $('#updateModal').modal('show');
+            $('.Title').val(customer_Title);
+            $('.FirstName').val(customer_FirstName);
+            $('.Surname').val(customer_Surname);
+            $('.Mobile').val(customer_Mobile);
+            $('.EmailAddress').val(customer_EmailAddress);
+            $('.HomeAddressLine1').val(customer_HomeAddressLine1);
+            $('.HomeAddressLine2').val(customer_HomeAddressLine2);
+            $('.HomeTown').val(customer_HomeTown);
+            $('.HomeCounty_City').val(customer_HomeCounty_City);
+            $('.HomeEircode').val(customer_HomeEircode);
+            $('.ShippingAddressLine1').val(customer_ShippingAddressLine1);
+            $('.ShippingAddressLine2').val(customer_ShippingAddressLine2);
+            $('.ShippingTown').val(customer_ShippingTown);
+            $('.ShippingCounty_City').val(customer_ShippingCounty_City);
+            $('.ShippingEircode').val(customer_ShippingEircode);
+            $('.id').val(customer_id);
+        });
+        //
+        // Handle Update Modal form submit using AJAX PUT
+        //
+        var updateForm = $("#updateForm");
+        updateForm.submit(function(e){
+            e.preventDefault(); // prevent handling the normal form submit click!
+            var id = updateForm.find('input[name="customerId"]').val();    
+            $.ajax({
+                type: updateForm.attr('method'),
+                url:  updateForm.attr('action')+"/"+id,
+                data: updateForm.serialize(), // get data from form!
+                success: function (data) {
+                    console.log('Update successful!');
+                    // make a timed Bootstrap Alert on Success
+                    // then re-direct to "/"
+                    $('#successAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+                error: function (data) {
+                    console.log('An error occurred.');
+                    // make a timed Bootstrap Alert on Error
+                    // then re-direct to "/"
+                    $('#errorAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+            });
+            $('#updateModal').modal('hide');
+        });
+        //
+        // Set up the Update Modal for the phones- It is shown, and data passed, via button click
+        //
+        $('#phoneList').on('click','.update',function(){
+            var phone_id = $(this).data('id');
+            var phone_Manufacturer = $(this).data('Manufacturer');
+            var phone_Model = $(this).data('Model');
+            var phone_Price = $(this).data('Price');
+            // alert (quotation_id+": "+ quotation_quote+" "+quotation_author);
+            $('#updateModalPhone').modal('show');
+            $('.Manufacturer').val(phone_Manufacturer);
+            $('.Model').val(phone_Model);
+            $('.Price').val(phone_Price);
+            $('.id').val(phone_id);
+        });
+
+        //
+        // Handle Update Modal for phone form submit using AJAX PUT
+        //
+        var updateFormPhone = $("#updateFormPhone");
+        updateFormPhone.submit(function(e){
+            e.preventDefault(); // prevent handling the normal form submit click!
+            var id = updateFormPhone.find('input[name="phoneId"]').val();    
+            $.ajax({
+                type: updateFormPhone.attr('method'),
+                url:  updateFormPhone.attr('action')+"/"+id,
+                data: updateFormPhone.serialize(), // get data from form!
+                success: function (data) {
+                    console.log('Update successful!');
+                    // make a timed Bootstrap Alert on Success
+                    // then re-direct to "/"
+                    $('#successAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+                error: function (data) {
+                    console.log('An error occurred.');
+                    // make a timed Bootstrap Alert on Error
+                    // then re-direct to "/"
+                    $('#errorAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+            });
+            $('#updateModalPhone').modal('hide');
+        });
+
+        //
+        // Set up the Delete Modal - It is shown, and data passed, via button click
+        //
+        $('#customerList').on('click','.delete',function(){
+            var customer_id = $(this).data('id');
+            $("#deleteModal .modal-body").html("<span class=\"font-weight-bold\">Are you sure you want to delete the Customer: ?</span>");
+            $('#deleteModal').modal('show');
+            $('.id').val(customer_id);
+        });
+        //
+        // Handle Delete Modal form submit using AJAX DELETE
+        //
+        var deleteForm = $("#deleteForm");
+        deleteForm.submit(function(e){
+            // make everything look like a Single Page Application
+            // consuming the RESTful API routes based on user selection
+            e.preventDefault();  // prevent handling the normal form submit click!
+            var id = deleteForm.find('input[name="customerId"]').val();   
+            $.ajax({
+                type: deleteForm.attr('method'),
+                url:  deleteForm.attr('action')+"/"+id,
+                success: function (data) {
+                    console.log('Deletion successful!');
+                    // make a timed Bootstrap Alert on Success
+                    // then re-direct to "/"
+                    $('#successAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+                error: function (data) {
+                    console.log('An error occurred.');
+                    // make a timed Bootstrap Alert on Error
+                    // then re-direct to "/"
+                    $('#errorAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+            });
+            $('#deleteModal').modal('hide');
+        });
+
+        //
+        // Set up the Delete Modal for PHONE - It is shown, and data passed, via button click
+        //
+        $('#phoneList').on('click','.delete',function(){
+            var phone_id = $(this).data('id');
+            $("#deleteModalPhone .modal-body").html("<span class=\"font-weight-bold\">Are you sure you want to delete the Phone: ?</span>");
+            $('#deleteModalPhone').modal('show');
+            $('.id').val(phone_id);
+        });
+        //
+        // Handle Delete Modal for PHONE form submit using AJAX DELETE
+        //
+        var deleteFormPhone = $("#deleteFormPhone");
+        deleteFormPhone.submit(function(e){
+            // make everything look like a Single Page Application
+            // consuming the RESTful API routes based on user selection
+            e.preventDefault();  // prevent handling the normal form submit click!
+            var id = deleteFormPhone.find('input[name="phoneId"]').val();   
+            $.ajax({
+                type: deleteFormPhone.attr('method'),
+                url:  deleteFormPhone.attr('action')+"/"+id,
+                success: function (data) {
+                    console.log('Deletion successful!');
+                    // make a timed Bootstrap Alert on Success
+                    // then re-direct to "/"
+                    $('#successAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+                error: function (data) {
+                    console.log('An error occurred.');
+                    // make a timed Bootstrap Alert on Error
+                    // then re-direct to "/"
+                    $('#errorAlert').modal('show');
+                    var timer = setTimeout(function() {
+                        $(location).attr('href', '/')
+                    }, 3000);
+                },
+            });
+            $('#deleteModalPhone').modal('hide');
+        });
+
+
+        //
+        // Search: Field Selection
+        //
+        $("#fieldSearchSelect").on('change',function() {
+            var k = $(this).val();
+            if (k == 1) {
+                $("#tableFilter").attr("placeholder", "Filter Customer List by FirstName...");
+            } else  {
+                $("#tableFilter").attr("placeholder", "Filter Customer List by Surname...");
+            }
+            // $("#tableFilter").val("");
+            $("#tableFilter").keyup();
+        });
+        //
+        // Search: Table Filter
+        //
+        $("#tableFilter").keyup(function(){
+            var filter = $(this).val().toUpperCase(); 
+            $("#customerList").find('tr').each(function(rows) {
+                if (rows !==  0) {
+                    var row = $(this);
+                    var searching = "";
+                    if ($("#fieldSearchSelect").val() == 1) {
+                        searching = row.find("td:nth-child(2)").text().toUpperCase();
+                    }  else  {
+                        searching = row.find("td:nth-child(3)").text().toUpperCase();
+                    }
+                    if (searching.indexOf(filter) != -1) {               
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
+                }
+            });
+        });
+        //
+        // Search: Database search
+        //
+        $("#databaseSearch").on('click',function() {
+            var search = $("#databaseSearchFilter").val().replace(/[|&;$%@"<>()+,^  ]/g, "");;
+            if (search) {
+                $(location).attr('href', '/'+$("#databaseSearchSelect").val()+'/'+search);
+            } else {
+                $(location).attr('href', '/');
+            }
+        });
+        //
+        //  If there is a database filter then add a badge
+        //
+        if ($(location).attr('pathname') !== '/') {
+           $('#databaseFilterNotice').text("("+$(location).attr('pathname')+")");
+        }
+    });
+
+</script>
+</body>
+</html>
