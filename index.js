@@ -26,7 +26,7 @@ app.set('view engine','hbs');
 app.use('/assets',express.static(_dirname+'/public'));
 
 
-const uri = "mongodb+srv://adminUser:admin@cluster0-brfx3.mongodb.net/test?retryWrites=true&w=majority";
+//const uri = "Uri goes here" ;
 const mongoose = require('mongoose');
 
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify:false
